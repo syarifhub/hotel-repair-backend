@@ -1,0 +1,48 @@
+{
+  "name": "it-repair-backend",
+  "version": "1.0.0",
+  "description": "IT Repair Request System - Backend API",
+  "main": "dist/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "create-admin": "ts-node src/scripts/createAdmin.ts",
+    "update-admin-password": "ts-node src/scripts/updateAdminPassword.ts",
+    "add-admin": "ts-node src/scripts/addAdmin.ts",
+    "view-data": "ts-node src/scripts/viewData.ts",
+    "reset-data": "ts-node src/scripts/resetData.ts",
+    "migrate-counters": "ts-node src/scripts/migrateCounters.ts",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [
+    "it",
+    "repair",
+    "hotel",
+    "line"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@line/bot-sdk": "^9.3.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.3",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.10.5",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}
