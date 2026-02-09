@@ -255,6 +255,41 @@ export class RepairRequestService {
       lastUpdated: new Date()
     };
   }
+
+  async cancelRequest(id: string): Promise<IRepairRequest | null> {
+    // ถ้าเป็นรูปแบบ XX-XXXX (เช่น IT-0001, HK-0002) ให้ค้นหาด้วย requestNumber
+    let request;
+    if (id.match(/^[A-Z]{2,3}-\d{4}$/)) {
+      request = await RepairRequest.findOne({ requestNumber: id });
+    } else if (mongoose.Types.ObjectId.isValid(id)) {
+      request = await RepairRequest.findById(id);
+    } else {
+      return null;
+    }
+
+    if (!request) {
+      return null;
+    }
+
+    // ตรวจสอบว่าสถานะเป็น "รอดำเนินการ" เท่านั้น
+    if (request.status !== 'รอดำเนินการ') {
+      throw new Error('Cannot cancel request that is not pending');
+    }
+
+    // อัพเดทสถานะเป็น "ยกเลิก"
+    request.status = 'ยกเลิก';
+    request.statusHistory.push({
+      oldStatus: 'รอดำเนินการ',
+      newStatus: 'ยกเลิก',
+      notes: 'ยกเลิกโดยผู้แจ้ง',
+      changedAt: new Date()
+    });
+    request.updatedAt = new Date();
+
+    await request.save();
+
+    return request.populate('assignedTo', 'fullName username');
+  }
 }
 
 export const repairRequestService = new RepairRequestService();

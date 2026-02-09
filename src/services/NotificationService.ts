@@ -108,6 +108,38 @@ ${request.problemDescription}
     `.trim();
   }
 
+  async sendCancelNotification(request: IRepairRequest): Promise<void> {
+    if (!this.client || !this.LINE_GROUP_ID) {
+      console.log('LINE notification not configured, skipping...');
+      return;
+    }
+
+    try {
+      const message = `
+❌ ยกเลิกการแจ้งซ่อม
+
+📋 หัวข้อ: ${request.title}
+🖥️ ประเภทอุปกรณ์: ${request.equipmentType}
+🏢 แผนก: ${request.department}
+👤 ผู้แจ้ง: ${request.reporterName}
+
+🆔 รหัสคำขอ: ${request.requestNumber}
+📅 วันที่ยกเลิก: ${new Date().toLocaleString('th-TH')}
+
+ℹ️ เหตุผล: ยกเลิกโดยผู้แจ้ง
+      `.trim();
+
+      await this.client.pushMessage(this.LINE_GROUP_ID, {
+        type: 'text',
+        text: message
+      });
+
+      console.log(`✅ LINE cancellation notification sent for request ${request._id}`);
+    } catch (error: any) {
+      console.error(`❌ Failed to send LINE cancellation notification:`, error.message);
+    }
+  }
+
   private async queueForRetry(requestId: string): Promise<void> {
     await NotificationLog.create({
       requestId,

@@ -54,4 +54,45 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Public endpoint - Cancel repair request
+router.post('/:id/cancel', async (req, res) => {
+  try {
+    const requestId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const request = await repairRequestService.cancelRequest(requestId);
+
+    if (!request) {
+      res.status(404).json({
+        error: 'Not Found',
+        message: `Repair request with ID '${req.params.id}' not found`
+      });
+      return;
+    }
+
+    // Send LINE notification asynchronously
+    notificationService.sendCancelNotification(request).catch(error => {
+      console.error('Failed to send cancellation notification:', error);
+    });
+
+    res.json({
+      message: 'Repair request cancelled successfully',
+      data: request
+    });
+  } catch (error: any) {
+    console.error('Error cancelling repair request:', error);
+    
+    if (error.message === 'Cannot cancel request that is not pending') {
+      res.status(400).json({
+        error: 'Bad Request',
+        message: error.message
+      });
+      return;
+    }
+
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to cancel repair request'
+    });
+  }
+});
+
 export default router;
