@@ -4,6 +4,7 @@ export interface MonthlyStats {
   byDepartment: { [key: string]: number };
   byStatus: { [key: string]: number };
   byEquipmentType: { [key: string]: number };
+  byDepartmentEquipment: { [department: string]: { [equipment: string]: number } };
   totalRequests: number;
   month: number;
   year: number;
@@ -25,7 +26,7 @@ export class ReportService {
       createdYear: year
     };
 
-    const [byDepartment, byStatus, byEquipmentType, total] = await Promise.all([
+    const [byDepartment, byStatus, byEquipmentType, byDepartmentEquipment, total] = await Promise.all([
       RepairRequest.aggregate([
         { $match: query },
         { $group: { _id: '$department', count: { $sum: 1 } } }
@@ -38,13 +39,37 @@ export class ReportService {
         { $match: query },
         { $group: { _id: '$equipmentType', count: { $sum: 1 } } }
       ]),
+      RepairRequest.aggregate([
+        { $match: query },
+        { 
+          $group: { 
+            _id: { 
+              department: '$department', 
+              equipmentType: '$equipmentType' 
+            }, 
+            count: { $sum: 1 } 
+          } 
+        }
+      ]),
       RepairRequest.countDocuments(query)
     ]);
+
+    // Transform department-equipment data into nested object
+    const deptEquipMap: { [department: string]: { [equipment: string]: number } } = {};
+    byDepartmentEquipment.forEach(item => {
+      const dept = item._id.department;
+      const equip = item._id.equipmentType;
+      if (!deptEquipMap[dept]) {
+        deptEquipMap[dept] = {};
+      }
+      deptEquipMap[dept][equip] = item.count;
+    });
 
     return {
       byDepartment: Object.fromEntries(byDepartment.map(item => [item._id, item.count])),
       byStatus: Object.fromEntries(byStatus.map(item => [item._id, item.count])),
       byEquipmentType: Object.fromEntries(byEquipmentType.map(item => [item._id, item.count])),
+      byDepartmentEquipment: deptEquipMap,
       totalRequests: total,
       month,
       year
