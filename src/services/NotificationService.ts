@@ -91,6 +91,18 @@ export class NotificationService {
   }
 
   private formatNotificationMessage(request: IRepairRequest): string {
+    // Convert to Thailand timezone (UTC+7)
+    const thaiDate = new Date(request.createdAt).toLocaleString('th-TH', {
+      timeZone: 'Asia/Bangkok',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+
     return `
 🔧 แจ้งซ่อมอุปกรณ์ IT ใหม่
 
@@ -104,7 +116,7 @@ ${request.location ? `📍 สถานที่: ${request.location}` : ''}
 ${request.problemDescription}
 
 🆔 รหัสคำขอ: ${request.requestNumber}
-📅 วันที่แจ้ง: ${new Date(request.createdAt).toLocaleString('th-TH')}
+📅 วันที่แจ้ง: ${thaiDate}
     `.trim();
   }
 
@@ -115,6 +127,18 @@ ${request.problemDescription}
     }
 
     try {
+      // Convert to Thailand timezone (UTC+7)
+      const thaiDate = new Date().toLocaleString('th-TH', {
+        timeZone: 'Asia/Bangkok',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+
       const message = `
 ❌ ยกเลิกการแจ้งซ่อม
 
@@ -124,7 +148,7 @@ ${request.problemDescription}
 👤 ผู้แจ้ง: ${request.reporterName}
 
 🆔 รหัสคำขอ: ${request.requestNumber}
-📅 วันที่ยกเลิก: ${new Date().toLocaleString('th-TH')}
+📅 วันที่ยกเลิก: ${thaiDate}
 
 ℹ️ เหตุผล: ยกเลิกโดยผู้แจ้ง
       `.trim();
