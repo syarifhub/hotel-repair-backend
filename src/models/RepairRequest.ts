@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IRepairRequest extends Document {
   requestNumber: string; // รหัสสั้นๆ เช่น IT-0001
   equipmentType: 'Computer' | 'Printer' | 'CCTV' | 'UPS' | 'Software';
-  department: 'Front Office' | 'Housekeeping' | 'Food & Beverage' | 'Engineering' | 'Accounting' | 'Sales & Marketing' | 'Security' | 'IT' | 'HR' | 'Other';
+  department: 'Front Office' | 'Housekeeping' | 'Food & Beverage' | 'Engineering' | 'Accounting' | 'Sales & Marketing' | 'Human Resources' | 'Reservation' | 'Other';
   title: string;
   problemDescription: string;
   reporterName: string;
@@ -41,7 +41,7 @@ const RepairRequestSchema = new Schema<IRepairRequest>(
     department: {
       type: String,
       required: true,
-      enum: ['Front Office', 'Housekeeping', 'Food & Beverage', 'Engineering', 'Accounting', 'Sales & Marketing', 'Security', 'IT', 'HR', 'Other']
+      enum: ['Front Office', 'Housekeeping', 'Food & Beverage', 'Engineering', 'Accounting', 'Sales & Marketing', 'Human Resources', 'Reservation', 'Other']
     },
     title: { type: String, required: true },
     problemDescription: { type: String, required: true },
