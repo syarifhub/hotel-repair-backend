@@ -290,6 +290,22 @@ export class RepairRequestService {
 
     return request.populate('assignedTo', 'fullName username');
   }
+
+  // ลบคำขอซ่อม (เฉพาะที่ยกเลิกแล้ว)
+  async deleteRequest(requestId: string): Promise<void> {
+    const request = await RepairRequest.findById(requestId);
+
+    if (!request) {
+      throw new Error('Repair request not found');
+    }
+
+    // ตรวจสอบว่าเป็นรายการที่ยกเลิกแล้วเท่านั้น
+    if (request.status !== 'ยกเลิก') {
+      throw new Error('Cannot delete request that is not cancelled');
+    }
+
+    await RepairRequest.findByIdAndDelete(requestId);
+  }
 }
 
 export const repairRequestService = new RepairRequestService();

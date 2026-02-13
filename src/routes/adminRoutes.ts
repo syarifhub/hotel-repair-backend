@@ -115,6 +115,41 @@ router.get('/repair-requests/:id/history', async (req, res) => {
   }
 });
 
+// Delete repair request (only for cancelled requests)
+router.delete('/repair-requests/:id', async (req: AuthRequest, res) => {
+  try {
+    const requestId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    await repairRequestService.deleteRequest(requestId);
+
+    res.json({
+      message: 'Repair request deleted successfully'
+    });
+  } catch (error: any) {
+    console.error('Error deleting repair request:', error);
+
+    if (error.message === 'Repair request not found') {
+      res.status(404).json({
+        error: 'Not Found',
+        message: `Repair request with ID '${req.params.id}' not found`
+      });
+      return;
+    }
+
+    if (error.message === 'Cannot delete request that is not cancelled') {
+      res.status(400).json({
+        error: 'Bad Request',
+        message: 'Only cancelled requests can be deleted'
+      });
+      return;
+    }
+
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to delete repair request'
+    });
+  }
+});
+
 // Export repair requests
 router.get('/repair-requests/export', async (req, res) => {
   try {
