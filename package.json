@@ -11,6 +11,7 @@
     "create-admin": "ts-node src/scripts/createAdmin.ts",
     "update-admin-password": "ts-node src/scripts/updateAdminPassword.ts",
     "add-admin": "ts-node src/scripts/addAdmin.ts",
+    "delete-admin": "ts-node src/scripts/deleteAdmin.ts",
     "view-data": "ts-node src/scripts/viewData.ts",
     "reset-data": "ts-node src/scripts/resetData.ts",
     "migrate-counters": "ts-node src/scripts/migrateCounters.ts",

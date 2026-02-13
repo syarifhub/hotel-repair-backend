@@ -41,9 +41,8 @@ export class RepairRequestService {
       'Engineering': 'ENG',
       'Accounting': 'ACC',
       'Sales & Marketing': 'SM',
-      'Security': 'SEC',
-      'IT': 'IT',
-      'HR': 'HR',
+      'Human Resources': 'HR',
+      'Reservation': 'RSV',
       'Other': 'OTH'
     };
     return codes[department] || 'OTH';
