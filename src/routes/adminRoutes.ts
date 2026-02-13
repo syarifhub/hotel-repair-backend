@@ -88,33 +88,6 @@ router.patch('/repair-requests/:id', validate(updateRequestSchema), async (req: 
   }
 });
 
-// Get repair request history
-router.get('/repair-requests/:id/history', async (req, res) => {
-  try {
-    const requestId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-    const history = await repairRequestService.getRequestHistory(requestId);
-
-    res.json({
-      data: history
-    });
-  } catch (error: any) {
-    console.error('Error fetching request history:', error);
-
-    if (error.message === 'Repair request not found') {
-      res.status(404).json({
-        error: 'Not Found',
-        message: `Repair request with ID '${req.params.id}' not found`
-      });
-      return;
-    }
-
-    res.status(500).json({
-      error: 'Internal Server Error',
-      message: 'Failed to fetch request history'
-    });
-  }
-});
-
 // Delete repair request (only for cancelled requests)
 router.delete('/repair-requests/:id', async (req: AuthRequest, res) => {
   try {
@@ -146,6 +119,33 @@ router.delete('/repair-requests/:id', async (req: AuthRequest, res) => {
     res.status(500).json({
       error: 'Internal Server Error',
       message: 'Failed to delete repair request'
+    });
+  }
+});
+
+// Get repair request history
+router.get('/repair-requests/:id/history', async (req, res) => {
+  try {
+    const requestId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const history = await repairRequestService.getRequestHistory(requestId);
+
+    res.json({
+      data: history
+    });
+  } catch (error: any) {
+    console.error('Error fetching request history:', error);
+
+    if (error.message === 'Repair request not found') {
+      res.status(404).json({
+        error: 'Not Found',
+        message: `Repair request with ID '${req.params.id}' not found`
+      });
+      return;
+    }
+
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to fetch request history'
     });
   }
 });
