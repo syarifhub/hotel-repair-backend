@@ -36,9 +36,8 @@ export const repairRequestSchema = z.object({
     'Engineering',
     'Accounting',
     'Sales & Marketing',
-    'Security',
-    'IT',
-    'HR',
+    'Human Resources',
+    'Reservation',
     'Other'
   ]),
   title: z.string().min(1, 'Title is required'),
