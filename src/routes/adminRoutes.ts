@@ -25,6 +25,32 @@ router.get('/dashboard', async (req, res) => {
   }
 });
 
+// Get daily dashboard statistics
+router.get('/dashboard/daily', async (req, res) => {
+  try {
+    const date = req.query.date as string;
+    if (!date) {
+      res.status(400).json({
+        error: 'Bad Request',
+        message: 'Date parameter is required (format: YYYY-MM-DD)'
+      });
+      return;
+    }
+
+    const stats = await repairRequestService.getDailyDashboardStats(date);
+
+    res.json({
+      data: stats
+    });
+  } catch (error: any) {
+    console.error('Error fetching daily dashboard stats:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to fetch daily dashboard statistics'
+    });
+  }
+});
+
 // Get all repair requests with filtering and pagination
 router.get('/repair-requests', async (req, res) => {
   try {

@@ -255,6 +255,45 @@ export class RepairRequestService {
     };
   }
 
+  async getDailyDashboardStats(dateString: string) {
+    // Parse date string (YYYY-MM-DD)
+    const targetDate = new Date(dateString);
+    const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+
+    const dateFilter = {
+      createdAt: {
+        $gte: startOfDay,
+        $lte: endOfDay
+      }
+    };
+
+    const [byStatus, byEquipmentType, byDepartment, total] = await Promise.all([
+      RepairRequest.aggregate([
+        { $match: dateFilter },
+        { $group: { _id: '$status', count: { $sum: 1 } } }
+      ]),
+      RepairRequest.aggregate([
+        { $match: dateFilter },
+        { $group: { _id: '$equipmentType', count: { $sum: 1 } } }
+      ]),
+      RepairRequest.aggregate([
+        { $match: dateFilter },
+        { $group: { _id: '$department', count: { $sum: 1 } } }
+      ]),
+      RepairRequest.countDocuments(dateFilter)
+    ]);
+
+    return {
+      byStatus: Object.fromEntries(byStatus.map(item => [item._id, item.count])),
+      byEquipmentType: Object.fromEntries(byEquipmentType.map(item => [item._id, item.count])),
+      byDepartment: Object.fromEntries(byDepartment.map(item => [item._id, item.count])),
+      totalRequests: total,
+      date: dateString,
+      lastUpdated: new Date()
+    };
+  }
+
   async cancelRequest(id: string): Promise<IRepairRequest | null> {
     // ถ้าเป็นรูปแบบ XX-XXXX (เช่น IT-0001, HK-0002) ให้ค้นหาด้วย requestNumber
     let request;
